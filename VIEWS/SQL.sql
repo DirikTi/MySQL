@@ -17,4 +17,9 @@ COALESCE((
     ) FROM notifications n
     WHERE n.userId=u.userId AND isShowed=0
 ), '[]') AS notifications
-FROM users u
+FROM users u;
+
+CREATE VIEW v_posts
+AS
+SELECT p.postId, 
+FROM posts p
