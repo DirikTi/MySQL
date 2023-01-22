@@ -80,10 +80,17 @@ const TABLES = [
 
 const CHILD_FILENAME = '/seed.js';
 const PATH = process.cwd();
+export const DATAS = (function(){
+    let result = [];
+    TABLES.forEach((value) => {
+        let _ = {tableName: value.tableName, values: []};
+        result.push(_);
+    })
+}());
 
 
-const asidb = mysql.createConnection(MySQLInfo);
-asidb.connect((err) => {
+const asikus_db = mysql.createConnection(MySQLInfo);
+asikus_db.connect((err) => {
     if(err) {
         console.log(err);
         exit(-1);
@@ -95,19 +102,26 @@ asidb.connect((err) => {
 })
 
 async function main() {
+
+    let promiseArr = [];
+
     for (let index = 0; index < TABLES.length; index++) {
         const table = TABLES[index];
-        
+        console.log("in");    
         if(table.important) {
-            await doItAsync(table);
+            await focusTargetAsync(table);
         } else {
-            doIt(table);
+            promiseArr.push(focusTargetAsync(table))
+            
         }
-
     }
+
+    await Promise.all(promiseArr);
+    
+    exit(0);
 }
 
-async function doItAsync(_table) {
+async function focusTargetAsync(_table) {
     return new Promise((resolve, reject) => {
         const worker = new Worker(PATH + CHILD_FILENAME, {
             workerData: {
@@ -115,21 +129,28 @@ async function doItAsync(_table) {
             }
         });
 
-        worker.on("message", (query) => {
-            console.log(query);
-            resolve();
+        // PROMISE HELL TECHNIQUE
+        worker.on("message", (__query) => {
+            console.log(__query);
+            /*
+            asikus_db.query(__query, (err) => {
+                if(err) reject(err);
+            })
+            */
         });
         worker.on("error", reject);
         
         worker.on("exit", (code) => {
             if (code !== 0) {
                 reject(new Error("WTF ERROR"));
+                return -1
             }
+            resolve();
         })
     });
 }
 
-function doIt(_table) {
+function focusTarget(_table) {
     const worker = new Worker(PATH + CHILD_FILENAME, {
         workerData: {
             _table

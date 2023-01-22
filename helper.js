@@ -1,3 +1,12 @@
+export const COLUMN_TYPES = Object.freeze({
+    string: "string",
+    number: "number",
+    boolean: "boolean",
+    enum: "object",
+    email: "email"
+}) 
+
+
 const ALPH = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j" ,"k", "l", "m", "n", "o", "p", "q", "r", "s",
 "t", "u", "v", "w", "w", "x", "y", "z" ];
 
@@ -19,7 +28,7 @@ export function getRandomWord(length, isUpperCase = false) {
     return result;
 }
 
-export function getRandomSentece(length, isUpperCase = false) {
+export function* getRandomSentece(length) {
     let sizes = [];
     let size = 0;
 
@@ -33,10 +42,9 @@ export function getRandomSentece(length, isUpperCase = false) {
         size += (randomNumber + 1); // + 1 for space
     }
 
-    let results = "";
-    sizes.forEach((sizeValue) => {
-        results = results + getRandomWord(sizeValue) + " ";
-    });
+    for (let index = 0; index < size.length; index++) {
+        yield [ getRandomWord(sizeValue) + " ", sizeValue ];
+    }
 
-    return results + getRandomWord(length - size);
+    yield [ getRandomWord(length - size), length - size ];
 }
