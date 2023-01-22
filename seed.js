@@ -1,13 +1,24 @@
+import { isMainThread, parentPort, workerData,  } from 'worker_threads'
+
 const TYPES = [
     "string",
     "number",
     "array",
 ]
 
-function getRandomNumber(length) {
-    let results = "";
-    for (let i = 0; i < length; i++) {
-        results += Math.random() * 10;
-    }
-    return results;
+if (isMainThread) {
+    console.log("Wrong Script\nRun 'node run.js [host] [database_name] [user] [password] [port]'");
+} else {
+    parentPort.once("message", (value) => {
+        console.log("Started create table '" + value + "'");
+    });
+    
+    parentPort.once("close", (value) => {
+        console.log("Started create table '" + value + "'");
+    });
 }
+
+
+
+
+console.log();

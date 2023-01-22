@@ -4,17 +4,19 @@ import { exit } from "process";
 
 const argv = process.argv;
 
-if (argv[2] == undefined || argv[2] == undefined || argv[2] == undefined || argv[2] == undefined ) {
-    console.log("ERROR: missing mysql info parameteres\nnode run.js [host] [database_name] [user] [password] [port] ");
+if (argv[2] == undefined || argv[3] == undefined || argv[4] == undefined || argv[5] == undefined ) {
+    console.log("ERROR: missing mysql info parameteres\nnode run.js [host] [database_name] [user] [password] [port=3306] ");
     exit(1);
 }
 
+console.log(argv);
+
 const MySQLInfo = {
-    host: process.argv[2],
-    database: process.argv[3],
-    user: process.argv[4],
-    password: process.argv[5],
-    port: !process.argv[6] ? 3306 : process.argv[6]
+    host: argv[2],
+    database: argv[3],
+    user: argv[4],
+    password: argv[5],
+    port: !argv[6] ? 3306 : argv[6]
 }
 
 const TABLES = [
@@ -68,6 +70,9 @@ const TABLES = [
     }
 ]
 
+const CHILD_FILENAME = '/seed.js' 
+
+
 const asidb = mysql.createConnection(MySQLInfo);
 asidb.connect((err) => {
     if(err) {
@@ -79,5 +84,5 @@ asidb.connect((err) => {
 })
 
 function main() {
-
+    const worker = new Worker(CHILD_FILENAME);
 }
