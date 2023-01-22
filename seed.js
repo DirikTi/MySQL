@@ -1,3 +1,4 @@
+import { exit } from 'process';
 import { isMainThread, parentPort, workerData,  } from 'worker_threads'
 
 const TYPES = [
@@ -21,4 +22,8 @@ if (isMainThread) {
 
 
 
-console.log();
+console.log(workerData);
+
+parentPort.postMessage("INSERT INTO HELLO");
+
+exit(0);

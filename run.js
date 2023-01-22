@@ -3,25 +3,33 @@ import mysql from 'mysql';
 import { exit } from "process";
 
 const argv = process.argv;
-
-if (argv[2] == undefined || argv[3] == undefined || argv[4] == undefined || argv[5] == undefined ) {
+/*
+if (argv[2] == undefined || argv[3] == undefined || argv[4] == undefined ) {
     console.log("ERROR: missing mysql info parameteres\nnode run.js [host] [database_name] [user] [password] [port=3306] ");
     exit(1);
 }
 
-console.log(argv);
-
 const MySQLInfo = {
     host: argv[2],
-    database: argv[3],
+    // database: argv[3],
     user: argv[4],
-    password: argv[5],
-    port: !argv[6] ? 3306 : argv[6]
+    password: argv[5] && argv[6] ? argv[5] : "",
+    port: !argv[6] ? (!argv[5] ? 3306 : argv[5]) : argv[6]
+}*/
+
+const MySQLInfo = {
+    host: "localhost",
+    // database: argv[3],
+    user: "root",
+    password: "",
+    port: 3306
 }
+
+console.log(MySQLInfo);
 
 const TABLES = [
     { 
-        tableName: "users", rowCount: 50, columns: [
+        tableName: "users", important: true, rowCount: 50, columns: [
             { name: "username", type: "string", length: 50, unique: true },
             { name: "email", type: "email", length: 127, unique: true },
             { name: "phone", type: "number", length: 11, options: { min: 1, max: 9 }, unique: true },
@@ -32,7 +40,7 @@ const TABLES = [
         ]
     },
     { 
-        tableName: "posts", rowCount: 50, columns: [
+        tableName: "posts", important: true, rowCount: 50, columns: [
             { name: "typeId", type: "number" },
             { name: "userId", type: "number" },
             { name: "typeText", type: "string" },
@@ -70,7 +78,8 @@ const TABLES = [
     }
 ]
 
-const CHILD_FILENAME = '/seed.js' 
+const CHILD_FILENAME = '/seed.js';
+const PATH = process.cwd();
 
 
 const asidb = mysql.createConnection(MySQLInfo);
@@ -80,9 +89,63 @@ asidb.connect((err) => {
         exit(-1);
     }
 
-    main();
+    main().then(()  => {
+        exit(1);
+    });
 })
 
-function main() {
-    const worker = new Worker(CHILD_FILENAME);
+async function main() {
+    for (let index = 0; index < TABLES.length; index++) {
+        const table = TABLES[index];
+        
+        if(table.important) {
+            await doItAsync(table);
+        } else {
+            doIt(table);
+        }
+
+    }
+}
+
+async function doItAsync(_table) {
+    return new Promise((resolve, reject) => {
+        const worker = new Worker(PATH + CHILD_FILENAME, {
+            workerData: {
+                ..._table
+            }
+        });
+
+        worker.on("message", (query) => {
+            console.log(query);
+            resolve();
+        });
+        worker.on("error", reject);
+        
+        worker.on("exit", (code) => {
+            if (code !== 0) {
+                reject(new Error("WTF ERROR"));
+            }
+        })
+    });
+}
+
+function doIt(_table) {
+    const worker = new Worker(PATH + CHILD_FILENAME, {
+        workerData: {
+            _table
+        }
+    });
+
+    worker.on("message", (query) => {
+        console.log(query);
+    });
+    worker.on("error", (err) => {
+        console.log(err);
+    });
+    
+    worker.on("exit", (code) => {
+        if (code !== 0) {
+            reject(new Error("WTF ERROR"));
+        }
+    })
 }
