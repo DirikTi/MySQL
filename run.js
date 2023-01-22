@@ -32,7 +32,7 @@ const TABLES = [
         tableName: "users", important: true, rowCount: 50, columns: [
             { name: "username", type: "string", length: 50, unique: true },
             { name: "email", type: "email", length: 127, unique: true },
-            { name: "phone", type: "number", length: 11, options: { min: 1, max: 9 }, unique: true },
+            { name: "phone", type: "phone", length: 11, options: { min: 1, max: 9 }, unique: true },
             { name: "name", type: "string", length: 63 },
             { name: "avatar", type: "string", length: 127 },
             { name: "phoneToken", type: "string", length: 63 },
@@ -41,8 +41,8 @@ const TABLES = [
     },
     { 
         tableName: "posts", important: true, rowCount: 50, columns: [
-            { name: "typeId", type: "number" },
-            { name: "userId", type: "number" },
+            { name: "typeId", type: "number", options: { min: 1, max: 50 } },
+            { name: "userId", type: "number", options: { min: 1, max: 50 } },
             { name: "typeText", type: "string" },
             { name: "postUrls", type: "string" },
             { name: "type", type: [ "photo", "video", "mix", "text" ] },
@@ -65,7 +65,7 @@ const TABLES = [
         tableName: "releationships", rowCount: 100, columns: [
             { name: "userOneId", type: "number", options: { min: 1, max: 50 } },
             { name: "userTwoId", type: "number", options: { min: 1, max: 50 } },
-            { name: "releation", type: ["friend", "not_friend", "block"], change: [60, 25, 15], options: { min: 1, max: 50 } },
+            { name: "releation", type: ["friend", "not_friend", "block"], change: [60, 25, 15] },
         ], special: [ "userOneId", "userTwoId" ] 
     },
     { 
@@ -83,7 +83,7 @@ const PATH = process.cwd();
 export const DATAS = (function(){
     let result = [];
     TABLES.forEach((value) => {
-        let _ = {tableName: value.tableName, values: []};
+        let _ = { tableName: value.tableName, values: [] };
         result.push(_);
     })
 }());
@@ -102,12 +102,10 @@ asikus_db.connect((err) => {
 })
 
 async function main() {
-
     let promiseArr = [];
 
     for (let index = 0; index < TABLES.length; index++) {
         const table = TABLES[index];
-        console.log("in");    
         if(table.important) {
             await focusTargetAsync(table);
         } else {

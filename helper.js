@@ -3,7 +3,8 @@ export const COLUMN_TYPES = Object.freeze({
     number: "number",
     boolean: "boolean",
     enum: "object",
-    email: "email"
+    email: "email",
+    phone: "phone"
 }) 
 
 
