@@ -20,36 +20,48 @@ if (isMainThread) {
         query = query.concat(columnValue.name + ",");
     });
     
-    query = query.substring(0, query.length - 1).concat(") VALUES");
+    query = query.substring(0, query.length - 1).concat(") VALUES \n");
 
     for (let index = 0; index < workerData.rowCount; index++) {
-        
+        let newValueObj = {};
+        query = query + "(";
+        for (const [ columnValue, columnName, columnType ] of getValues()) {
+            newValueObj[columnName] = columnValue;
+            
+            if(columnType == "number") {
+                query = query + columnValue + ",";
+            } else {
+                query = query + "'" + columnValue + "',";
+            }
+        }
+        query = query.substring(0, query.length - 1).concat(")");
     }
 
     parentPort.postMessage(query);
-
     exit(0);
 }
-
+/**
+ * @returns {Generator<String, String, String>}
+ */
 function* getValues() {
     for (const column in workerData.columns) {
         if(column.type == COLUMN_TYPES.string) {
-            yield [getStringType(column.name, column.length, column.unique, column.hasSpaceWord), column.name];
+            yield [getStringType(column.name, column.length, column.unique, column.hasSpaceWord), column.name, column.type];
         } 
         else if (column.type == COLUMN_TYPES.number) {
-            yield [getRandomNumber(column.options.min, column.options.max), column.name];
+            yield [getRandomNumber(column.options.min, column.options.max), column.name, column.type];
         } 
         else if (column.type == COLUMN_TYPES.email) {
-            yield [getEmailType(column.name, column.length, column.unique), column.name];
+            yield [getEmailType(column.name, column.length, column.unique), column.name, column.type];
         } 
         else if (column.type == COLUMN_TYPES.boolean) {
-            yield [getRandomNumber(0, 100) < column.change, column.name];
+            yield [getRandomNumber(0, 100) < column.change, column.name, column.type];
         } 
         else if (typeof column.type === COLUMN_TYPES.enum) {
-            yield [getEnumType(column.name, column.changes)]
+            yield [getEnumType(column.name, column.changes), column.name, column.type]
         } 
         else if (column.type == COLUMN_TYPES.phone) {
-            yield [getPhoneNumber(column.name, column.unique)]
+            yield [getPhoneNumber(column.name, column.unique), column.name, column.type]
         }
         else {
             exit(-1);
@@ -120,6 +132,12 @@ function getEnumType(enums, changes) {
     }
 }
 
+/**
+ * 
+ * @param {String} name 
+ * @param {Boolean | undefined} unique 
+ * @returns 
+ */
 function getPhoneNumber(name ,unique = false) {
     let result = "+" + getRandomNumber(1, 9) + getRandomNumber(1, 9);
     result = result.concat([...Array(8)].map(() => getRandomNumber(0, 9)));
