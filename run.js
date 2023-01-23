@@ -36,7 +36,7 @@ const TABLES = [
             { name: "name", type: "string", length: 63 },
             { name: "avatar", type: "string", length: 127 },
             { name: "phoneToken", type: "string", length: 63 },
-            { name: "isSpecialUser", type: "boolean", change: [80] },
+            { name: "isSpecialUser", type: "boolean", change: [20] },
         ]
     },
     { 
@@ -45,7 +45,7 @@ const TABLES = [
             { name: "userId", type: "number", options: { min: 1, max: 50 } },
             { name: "typeText", type: "string" },
             { name: "postUrls", type: "string" },
-            { name: "type", type: [ "photo", "video", "mix", "text" ] },
+            { name: "type", type: [ "photo", "video", "mix", "text" ], change: [60, 30, 20, 50] },
         ]
     },
     { 

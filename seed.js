@@ -40,13 +40,13 @@ function* getValues() {
             yield [getRandomNumber(column.options.min, column.options.max), column.name];
         } 
         else if (column.type == COLUMN_TYPES.email) {
-            yield [getEmailType(column.name, column.length, column.unique), column.name]
+            yield [getEmailType(column.name, column.length, column.unique), column.name];
         } 
         else if (column.type == COLUMN_TYPES.boolean) {
-
+            yield [getRandomNumber(0, 100) < column.change, column.name];
         } 
         else if (typeof column.type === COLUMN_TYPES.enum) {
-            
+            yield [getEnumType(column.type, column.changes)]
         } 
         else if (column.type == COLUMN_TYPES.phone) {
 
@@ -77,6 +77,13 @@ function getStringType(name, length, unique = false, hasSpaceWord = false) {
     return result;
 }
 
+/**
+ * 
+ * @param {String} name 
+ * @param {Number} length 
+ * @param {Boolean} unique 
+ * @returns {String}
+ */
 function getEmailType(name, length, unique) {
     let result = getRandomWord(length) + "@" + getRandomWord(length) + ".com";
 
@@ -90,4 +97,25 @@ function getEmailType(name, length, unique) {
     }
 
     return result;
+}
+
+/**
+ * 
+ * @param {String[]} enums 
+ * @param {Number[]} changes 
+ * @returns {String}
+ */
+function getEnumType(enums, changes) {
+    let sum = 0;
+    enums.forEach((value) => sum += value);
+
+    let randNumber = getRandomNumber(0, sum);
+    
+    let valueChange = 0;
+    for (let index = 0; index < changes.length; index++) {
+        valueChange += changes[index];
+        if (randNumber < valueChange) {
+            return enums[index];
+        }
+    }
 }
