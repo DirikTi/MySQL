@@ -46,10 +46,10 @@ function* getValues() {
             yield [getRandomNumber(0, 100) < column.change, column.name];
         } 
         else if (typeof column.type === COLUMN_TYPES.enum) {
-            yield [getEnumType(column.type, column.changes)]
+            yield [getEnumType(column.name, column.changes)]
         } 
         else if (column.type == COLUMN_TYPES.phone) {
-
+            yield [getPhoneNumber(column.name, column.unique)]
         }
         else {
             exit(-1);
@@ -118,4 +118,20 @@ function getEnumType(enums, changes) {
             return enums[index];
         }
     }
+}
+
+function getPhoneNumber(name ,unique = false) {
+    let result = "+" + getRandomNumber(1, 9) + getRandomNumber(1, 9);
+    result = result.concat([...Array(8)].map(() => getRandomNumber(0, 9)));
+
+    if(unique) {
+        for(let i = 0; i < myData.values.length; i++) {
+            let _ = myData.values;
+            if(_[name] == result) {
+                getPhoneNumber(name, unique);
+            }
+        }
+    }
+
+    return result;
 }
