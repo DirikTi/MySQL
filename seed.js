@@ -120,19 +120,17 @@ function getEmailType(name, length, unique) {
  */
 function getEnumType(enums, changes) {
     let sum = 0;
-    enums.forEach((value) => sum += value);
+    changes.forEach((value) => sum += value);
 
     let randNumber = getRandomNumber(0, sum);
     
     let valueChange = 0;
     for (let index = 0; index < changes.length; index++) {
         valueChange += changes[index];
-        if (randNumber <= valueChange) {
+        if (randNumber < valueChange && randNumber > (valueChange - changes[index]) ) {
             return enums[index];
         }
     }
-
-    return "TEST";
 }
 
 /**
