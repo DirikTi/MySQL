@@ -43,8 +43,8 @@ const TABLES = [
         tableName: "posts", important: true, rowCount: 50, columns: [
             { name: "typeId", type: "number", options: { min: 1, max: 50 } },
             { name: "userId", type: "number", options: { min: 1, max: 50 } },
-            { name: "typeText", type: "string" },
-            { name: "postUrls", type: "string" },
+            { name: "typeText", type: "string", length: 127 },
+            { name: "postUrls", type: "string", length: 127 },
             { name: "type", type: [ "photo", "video", "mix", "text" ], change: [60, 30, 20, 50] },
         ]
     },
@@ -86,6 +86,8 @@ export const DATAS = (function(){
         let _ = { tableName: value.tableName, values: [] };
         result.push(_);
     })
+
+    return result;
 }());
 
 
@@ -121,6 +123,7 @@ async function main() {
 
 async function focusTargetAsync(_table) {
     return new Promise((resolve, reject) => {
+        console.log(_table);
         const worker = new Worker(PATH + CHILD_FILENAME, {
             workerData: {
                 ..._table
@@ -146,25 +149,4 @@ async function focusTargetAsync(_table) {
             resolve();
         })
     });
-}
-
-function focusTarget(_table) {
-    const worker = new Worker(PATH + CHILD_FILENAME, {
-        workerData: {
-            _table
-        }
-    });
-
-    worker.on("message", (query) => {
-        console.log(query);
-    });
-    worker.on("error", (err) => {
-        console.log(err);
-    });
-    
-    worker.on("exit", (code) => {
-        if (code !== 0) {
-            reject(new Error("WTF ERROR"));
-        }
-    })
 }

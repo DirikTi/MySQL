@@ -1,4 +1,3 @@
-import { exit } from 'process';
 import { isMainThread, parentPort, workerData } from 'worker_threads'
 import { COLUMN_TYPES, getRandomNumber, getRandomSentece, getRandomWord } from './helper.js';
 import { DATAS } from './run.js';
@@ -38,13 +37,15 @@ if (isMainThread) {
     }
 
     parentPort.postMessage(query);
-    exit(0);
+    process.exit(0);
 }
+
 /**
  * @returns {Generator<String, String, String>}
  */
 function* getValues() {
-    for (const column in workerData.columns) {
+    for (let index = 0; index < workerData.columns.length; index++) {
+        const column = workerData.columns[index];
         if(column.type == COLUMN_TYPES.string) {
             yield [getStringType(column.name, column.length, column.unique, column.hasSpaceWord), column.name, column.type];
         } 
@@ -58,13 +59,13 @@ function* getValues() {
             yield [getRandomNumber(0, 100) < column.change, column.name, column.type];
         } 
         else if (typeof column.type === COLUMN_TYPES.enum) {
-            yield [getEnumType(column.name, column.changes), column.name, column.type]
+            yield [getEnumType(column.type, column.change), column.name, column.type]
         } 
         else if (column.type == COLUMN_TYPES.phone) {
             yield [getPhoneNumber(column.name, column.unique), column.name, column.type]
         }
         else {
-            exit(-1);
+            process.exit(-1);
         }
     }
 }
@@ -126,10 +127,12 @@ function getEnumType(enums, changes) {
     let valueChange = 0;
     for (let index = 0; index < changes.length; index++) {
         valueChange += changes[index];
-        if (randNumber < valueChange) {
+        if (randNumber <= valueChange) {
             return enums[index];
         }
     }
+
+    return "TEST";
 }
 
 /**
