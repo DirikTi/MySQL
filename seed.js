@@ -21,22 +21,34 @@ if (isMainThread) {
     
     query = query.substring(0, query.length - 1).concat(") VALUES \n");
 
-    for (let index = 0; index < workerData.rowCount; index++) {
+    let index = 0
+    while (index < workerData.rowCount) {
         let newValueObj = {};
         query = query + "(";
+
         for (const [ columnValue, columnName, columnType ] of getValues()) {
             newValueObj[columnName] = columnValue;
             
-            if(columnType == "number") {
+            // CHECK UP SPECIALS 
+            /*for(let i = 0; i < myData.values.length; i++) {
+                let _ = myData.values;
+                if(_[name] == result) {
+                    getStringType(name, length, unique, hasSpaceWord);
+                }
+            }*/
+
+            if(columnType == "number" || columnType == "boolean") {
                 query = query + columnValue + ",";
             } else {
                 query = query + "'" + columnValue + "',";
             }
         }
-        query = query.substring(0, query.length - 1).concat(")");
+        query = query.substring(0, query.length - 1).concat("),\n");
     }
 
-    parentPort.postMessage(query);
+    parentPort.postMessage(
+        query.substring(0, query.length - 1)
+    );
     process.exit(0);
 }
 

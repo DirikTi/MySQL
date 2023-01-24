@@ -5,7 +5,7 @@ export const COLUMN_TYPES = Object.freeze({
     enum: "object",
     email: "email",
     phone: "phone"
-}) 
+});
 
 
 const ALPH = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j" ,"k", "l", "m", "n", "o", "p", "q", "r", "s",

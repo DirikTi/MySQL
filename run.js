@@ -1,6 +1,7 @@
 import { Worker } from "worker_threads"
 import mysql from 'mysql';
 import { exit } from "process";
+import fs from 'fs'
 
 const argv = process.argv;
 /*
@@ -58,7 +59,7 @@ const TABLES = [
         tableName: "post_comments", rowCount: 100, sameData: true, columns: [
             { name: "postId", type: "number", options: { min: 1, max: 50 } },
             { name: "userId", type: "number", options: { min: 1, max: 50 } },
-            { name: "comment", type: "string", options: { hasSpaceWord: true } },
+            { name: "comment", type: "string", length: 127, options: { hasSpaceWord: true } },
         ]
     },
     { 
@@ -132,13 +133,13 @@ async function focusTargetAsync(_table) {
 
         // PROMISE HELL TECHNIQUE
         worker.on("message", (__query) => {
-            console.log(__query);
-            /*
-            asikus_db.query(__query, (err) => {
-                if(err) reject(err);
-            })
-            */
+            console.log(_table.tableName + " created datas\n");
+            fs.writeFile("./INSERT_DATA/" + _table.tableName + ".sql", __query, { encoding: "utf-8" }, (err) => {
+                if(err) console.log(_table.tableName + " " +err);
+                
+            });
         });
+
         worker.on("error", reject);
         
         worker.on("exit", (code) => {
