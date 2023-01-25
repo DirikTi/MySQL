@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
                 19,0,'-'),
 			24,0,'-')
 		) VIRTUAL,
-    lastLogin_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP();
+    lastLogin_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
     updated_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
     PRIMARY KEY (userId),
@@ -36,7 +36,7 @@ CREATE TABLE types (
     typeId INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(127),
     hieararcyid CHAR(63),
-    INDEX USING BTREE (id)
+    INDEX  BTREE (typeId)
 ) ENGINE=MEMORY;
 
 
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS posts (
     userId INT UNSIGNED NOT NULL,
     typeText TEXT(512),
     postUrls TEXT NOT NULL,
-    type ENUM ('photo', 'video', 'text', 'mix')
+    type ENUM ('photo', 'video', 'text', 'mix'),
     isDelete TINYINT(1) DEFAULT 0,
     updated_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
@@ -68,7 +68,8 @@ CREATE TABLE IF NOT EXISTS post_comments (
     userId INT UNSIGNED NOT NULL,
     postId BIGINT UNSIGNED NOT NULL,
     comment CHAR(150),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    PRIMARY KEY(postCommentId)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS releationships (
@@ -78,15 +79,15 @@ CREATE TABLE IF NOT EXISTS releationships (
     releation ENUM('friend', 'not_friend', 'block'),
     updated_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
-    PRIMARY KEY (postLikeId) 
+    PRIMARY KEY (releationshipId) 
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS notifications (
-    notificationId BIGNIT UNSIGNED NOT NULL AUTO_INCREMENT,
+    notificationId BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     userId INT NOT NULL,
     title CHAR(63),
     body CHAR(255),
     isShowed TINYINT(1) NOT NULL DEFAULT 0, 
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
-    PRIMARY KEY (postLikeId)
+    PRIMARY KEY (notificationId)
 ) ENGINE=InnoDB
