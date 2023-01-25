@@ -19,23 +19,17 @@ if (isMainThread) {
         query = query.concat(columnValue.name + ",");
     });
     
-    query = query.substring(0, query.length - 1).concat(") VALUES \n");
+    query = query.substring(0, query.length - 1).concat(") VALUES ");
 
     let index = 0
     while (index < workerData.rowCount) {
         let newValueObj = {};
-        query = query + "(";
+        query = query + "\n(";
 
         for (const [ columnValue, columnName, columnType ] of getValues()) {
             newValueObj[columnName] = columnValue;
             
             // CHECK UP SPECIALS 
-            /*for(let i = 0; i < myData.values.length; i++) {
-                let _ = myData.values;
-                if(_[name] == result) {
-                    getStringType(name, length, unique, hasSpaceWord);
-                }
-            }*/
 
             if(columnType == "number" || columnType == "boolean") {
                 query = query + columnValue + ",";
@@ -43,12 +37,13 @@ if (isMainThread) {
                 query = query + "'" + columnValue + "',";
             }
         }
-        query = query.substring(0, query.length - 1).concat("),\n");
+        index = index + 1;
+        query = query.substring(0, query.length - 1).concat("),");
     }
 
-    parentPort.postMessage(
-        query.substring(0, query.length - 1)
-    );
+    query = query.substring(0, query.length - 1).concat(";");
+    parentPort.postMessage(query);
+    
     process.exit(0);
 }
 
@@ -68,7 +63,7 @@ function* getValues() {
             yield [getEmailType(column.name, column.length, column.unique), column.name, column.type];
         } 
         else if (column.type == COLUMN_TYPES.boolean) {
-            yield [getRandomNumber(0, 100) < column.change, column.name, column.type];
+            yield [getRandomNumber(0, 100) < column.change ? 1 : 0, column.name, column.type];
         } 
         else if (typeof column.type === COLUMN_TYPES.enum) {
             yield [getEnumType(column.type, column.change), column.name, column.type]
@@ -153,7 +148,7 @@ function getEnumType(enums, changes) {
  */
 function getPhoneNumber(name ,unique = false) {
     let result = "+" + getRandomNumber(1, 9) + getRandomNumber(1, 9);
-    result = result.concat([...Array(8)].map(() => getRandomNumber(0, 9)));
+    result = result.concat([...Array(8)].map(() => getRandomNumber(0, 9))).replace(/,/g, '');
 
     if(unique) {
         for(let i = 0; i < myData.values.length; i++) {
