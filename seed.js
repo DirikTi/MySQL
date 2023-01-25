@@ -25,11 +25,14 @@ if (isMainThread) {
     while (index < workerData.rowCount) {
         let newValueObj = {};
         query = query + "\n(";
-
+        
+        let checkData = {};
+        
         for (const [ columnValue, columnName, columnType ] of getValues()) {
             newValueObj[columnName] = columnValue;
             
-            // CHECK UP SPECIALS 
+            // CHECK UP SPECIALS
+            checkData[columnName] = columnValue; 
 
             if(columnType == "number" || columnType == "boolean") {
                 query = query + columnValue + ",";
@@ -37,8 +40,39 @@ if (isMainThread) {
                 query = query + "'" + columnValue + "',";
             }
         }
-        index = index + 1;
-        query = query.substring(0, query.length - 1).concat("),");
+
+        if(workerData.notEqualEachOther) {
+            if(checkData[workerData.notEqualEachOther[0]] == checkData[workerData.notEqualEachOther[1]]) {
+                continue;
+            }
+        }
+        
+
+        let hasPassed = true;
+
+        if(workerData.special) {
+            for (let i = 0; index < myData.values.length; i++) {
+                const element = myData.values[i];
+                
+                let counter = 0;
+
+                for (let j = 0; j < workerData.special.length; j++) {
+                    if(element[workerData.special[j]] == checkData[workerData.special[j]]) {
+                        counter++;
+                    }
+
+                    if(counter == workerData.special.length) {
+                        hasPassed = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(hasPassed) {
+            query = query.substring(0, query.length - 1).concat("),");
+            index = index + 1;
+        }
     }
 
     query = query.substring(0, query.length - 1).concat(";");
@@ -88,7 +122,7 @@ function getStringType(name, length, unique = false, hasSpaceWord = false) {
 
     if(unique) {
         for(let i = 0; i < myData.values.length; i++) {
-            let _ = myData.values;
+            let _ = myData.values[i];
             if(_[name] == result) {
                 getStringType(name, length, unique, hasSpaceWord);
             }
@@ -109,7 +143,7 @@ function getEmailType(name, length, unique) {
 
     if(unique) {
         for(let i = 0; i < myData.values.length; i++) {
-            let _ = myData.values;
+            let _ = myData.values[i];
             if(_[name] == result) {
                 getEmailType(name, length, unique);
             }
@@ -152,7 +186,7 @@ function getPhoneNumber(name ,unique = false) {
 
     if(unique) {
         for(let i = 0; i < myData.values.length; i++) {
-            let _ = myData.values;
+            let _ = myData.values[i];
             if(_[name] == result) {
                 getPhoneNumber(name, unique);
             }

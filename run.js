@@ -67,7 +67,7 @@ const TABLES = [
             { name: "userOneId", type: "number", options: { min: 1, max: 50 } },
             { name: "userTwoId", type: "number", options: { min: 1, max: 50 } },
             { name: "releation", type: ["friend", "not_friend", "block"], change: [60, 25, 15] },
-        ], special: [ "userOneId", "userTwoId" ] 
+        ], special: [ "userOneId", "userTwoId" ], notEqualEachOther: [ "userOneId", "userTwoId" ]
     },
     { 
         tableName: "notifications", rowCount: 50, sameData: true, columns: [
