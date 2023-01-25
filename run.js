@@ -20,13 +20,11 @@ const MySQLInfo = {
 
 const MySQLInfo = {
     host: "localhost",
-    // database: argv[3],
+    database: "fake_socialmedias",
     user: "root",
     password: "",
     port: 3306
 }
-
-console.log(MySQLInfo);
 
 const TABLES = [
     { 
@@ -100,7 +98,7 @@ asikus_db.connect((err) => {
     }
 
     main().then(()  => {
-        exit(1);
+        exit(0);
     });
 })
 
@@ -138,6 +136,10 @@ async function focusTargetAsync(_table) {
                 if(err) console.log(_table.tableName + " " +err);
                 
             });
+
+            asikus_db.query(__query, (err) => {
+                console.log("INSERTED DATAS " + _table.tableName);
+            })
         });
 
         worker.on("error", reject);

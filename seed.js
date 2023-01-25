@@ -47,13 +47,11 @@ if (isMainThread) {
             }
         }
         
-
         let hasPassed = true;
 
         if(workerData.special) {
             for (let i = 0; index < myData.values.length; i++) {
                 const element = myData.values[i];
-                
                 let counter = 0;
 
                 for (let j = 0; j < workerData.special.length; j++) {
