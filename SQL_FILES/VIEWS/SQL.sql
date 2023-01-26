@@ -21,5 +21,5 @@ FROM users u;
 
 CREATE VIEW v_posts
 AS
-SELECT p.postId, 
+SELECT p.postId
 FROM posts p
