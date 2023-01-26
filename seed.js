@@ -24,8 +24,7 @@ if (isMainThread) {
     let index = 0
     while (index < workerData.rowCount) {
         let newValueObj = {};
-        query = query + "\n(";
-        
+        let _query = "\n(";
         let checkData = {};
         
         for (const [ columnValue, columnName, columnType ] of getValues()) {
@@ -35,9 +34,9 @@ if (isMainThread) {
             checkData[columnName] = columnValue; 
 
             if(columnType == "number" || columnType == "boolean") {
-                query = query + columnValue + ",";
+                _query = _query + columnValue + ",";
             } else {
-                query = query + "'" + columnValue + "',";
+                _query = _query + "'" + columnValue + "',";
             }
         }
 
@@ -68,7 +67,7 @@ if (isMainThread) {
         }
 
         if(hasPassed) {
-            query = query.substring(0, query.length - 1).concat("),");
+            query = query +  _query.substring(0, _query.length - 1).concat("),");
             index = index + 1;
         }
     }
@@ -137,7 +136,7 @@ function getStringType(name, length, unique = false, hasSpaceWord = false) {
  * @returns {String}
  */
 function getEmailType(name, length, unique) {
-    let result = getRandomWord(length) + "@" + getRandomWord(length) + ".com";
+    let result = getRandomWord(length) + "@" + getRandomWord(6) + ".com";
 
     if(unique) {
         for(let i = 0; i < myData.values.length; i++) {
@@ -166,7 +165,7 @@ function getEnumType(enums, changes) {
     let valueChange = 0;
     for (let index = 0; index < changes.length; index++) {
         valueChange += changes[index];
-        if (randNumber < valueChange && randNumber > (valueChange - changes[index]) ) {
+        if (randNumber <= valueChange && randNumber > (valueChange - changes[index]) ) {
             return enums[index];
         }
     }

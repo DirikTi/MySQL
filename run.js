@@ -30,7 +30,7 @@ const TABLES = [
     { 
         tableName: "users", important: true, rowCount: 50, columns: [
             { name: "username", type: "string", length: 50, unique: true },
-            { name: "email", type: "email", length: 127, unique: true },
+            { name: "email", type: "email", length: 75, unique: true },
             { name: "phone", type: "phone", length: 11, options: { min: 1, max: 9 }, unique: true },
             { name: "name", type: "string", length: 63 },
             { name: "avatar", type: "string", length: 127 },
@@ -51,6 +51,7 @@ const TABLES = [
         tableName: "post_likes", rowCount: 300, columns: [
             { name: "postId", type: "number", options: { min: 1, max: 50 } },
             { name: "userId", type: "number", options: { min: 1, max: 50 } },
+            { name: "isLiked", type: "boolean", change: [80] },
         ] 
     },
     { 
@@ -138,6 +139,9 @@ async function focusTargetAsync(_table) {
             });
 
             asikus_db.query(__query, (err) => {
+                if(err) {
+                    console.error("Crashed FKKkKK " + _table.tableName + " " + err);
+                }
                 console.log("INSERTED DATAS " + _table.tableName);
             })
         });
