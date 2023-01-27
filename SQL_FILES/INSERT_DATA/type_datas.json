@@ -1,0 +1,77 @@
+[
+    {
+        "name": "main",
+        "relation": "0"
+    },
+ 
+ 
+    {
+        "name": "books",
+        "relation": "main"
+    },
+    {
+        "name": "games",
+        "relation": "main"
+    },
+    {
+        "name": "films",
+        "relation": "main"
+    },
+    {
+        "name": "sports",
+        "relation": "main"
+    },
+ 
+ 
+    {
+        "name": "fantastics",
+        "relation": "books"
+    },
+    {
+        "name": "classic",
+        "relation": "books"
+    },
+    {
+        "name": "Romans",
+        "relation": "books"
+    },
+
+    {
+        "name": "rpg",
+        "relation": "games"
+    },
+    {
+        "name": "fps",
+        "relation": "games"
+    },
+    {
+        "name": "spy",
+        "relation": "games"
+    },
+
+    {
+        "name": "scary",
+        "relation": "films"
+    },
+    {
+        "name": "adventure",
+        "relation": "films"
+    },
+    {
+        "name": "commedy",
+        "relation": "films"
+    },
+
+    {
+        "name": "football",
+        "relation": "sports"
+    },
+    {
+        "name": "basketball",
+        "relation": "sports"
+    },
+    {
+        "name": "tennis",
+        "relation": "sports"
+    }
+]
