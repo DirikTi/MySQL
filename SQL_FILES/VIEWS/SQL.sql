@@ -21,7 +21,7 @@ FROM users u;
 
 CREATE VIEW v_comments
 AS
-SELECT u.userId, u.username, u.avatar, pc.postCommentId,
+SELECT pc.postCommentId, pc.comment, pc.postId
 (
     SELECT JSON_OBJECT(
         'userId', u.userId,
@@ -29,23 +29,29 @@ SELECT u.userId, u.username, u.avatar, pc.postCommentId,
         'avatar', u.avatar
     )
     FROM users u 
-    WHERE u.userId 
-    LIMIT 1 pc.userId
-) AS
+    WHERE u.userId = pc.userId
+    LIMIT 1 
+) AS userInfo,
+pc.created_date
 FROM post_comments pc
 
 CREATE VIEW v_posts
 AS
-SELECT p.postId, postUrls, typeText, type,(
+SELECT p.postId, postUrls, typeText, type, (
     SELECT COUNT(1) 
     FROM post_likes pl
     WHERE pl.postId=p.postId
-) AS likeCount, COALESCE((
-    SELECT JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'id', pc.postCommentId,
-            ''
+) AS likeCount, COALESCE(
+    (
+        SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'commentId', pc.postCommentId,
+                'comment', pc.comment,
+                'userInfo', pc.userInfo
+            )
         )
+        FROM v_comments c
+        WHERE c.postId=p.postId
     )
-)) comments
-FROM posts p
+) comments
+FROM posts p;
