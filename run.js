@@ -117,6 +117,15 @@ async function main() {
     }
 
     await Promise.all(promiseArr);
+
+    fs.readFile("./SQL_FILES/INSERT_DATA/SQL.sql", (err, data) => {
+        console.log("CREATING types data");
+        asikus_db.query(data, (err) => {
+            err ?
+                console.log("WHILE CREATING TYPES DATA GET ERROR =>" + err)
+            : console.log("CREATED_TYPES_DATA")
+        });
+    })
     
     exit(0);
 }
@@ -133,14 +142,14 @@ async function focusTargetAsync(_table) {
         // PROMISE HELL TECHNIQUE
         worker.on("message", (__query) => {
             console.log(_table.tableName + " created datas\n");
-            fs.writeFile("./INSERT_DATA/" + _table.tableName + ".sql", __query, { encoding: "utf-8" }, (err) => {
+            fs.writeFile("./SQL_FILES/INSERT_DATA/" + _table.tableName + ".sql", __query, { encoding: "utf-8" }, (err) => {
                 if(err) console.log(_table.tableName + " " +err);
                 
             });
 
             asikus_db.query(__query, (err) => {
                 if(err) {
-                    console.error("Crashed FKKkKK " + _table.tableName + " " + err);
+                    console.error("Crashed FK " + _table.tableName + " " + err);
                 }
                 console.log("INSERTED DATAS " + _table.tableName);
             })
