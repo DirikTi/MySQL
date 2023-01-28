@@ -99,13 +99,13 @@ asikus_db.connect((err) => {
     }
 
     main().then(()  => {
-        exit(0);
+        //exit(0);
     });
 })
 
 async function main() {
     let promiseArr = [];
-
+    /*
     for (let index = 0; index < TABLES.length; index++) {
         const table = TABLES[index];
         if(table.important) {
@@ -116,18 +116,21 @@ async function main() {
         }
     }
 
-    await Promise.all(promiseArr);
+    await Promise.all(promiseArr);*/
 
     fs.readFile("./SQL_FILES/INSERT_DATA/SQL.sql", (err, data) => {
+        
         console.log("CREATING types data");
-        asikus_db.query(data, (err) => {
-            err ?
-                console.log("WHILE CREATING TYPES DATA GET ERROR =>" + err)
-            : console.log("CREATED_TYPES_DATA")
+
+        asikus_db.query(data, (err, result) => {
+            if (err) {
+                console.log("WHILE CREATING TYPES DATA GET ERROR =>" + err);
+                return -1;
+            }
+            console.log(result);    
+            console.log("CREATED_TYPES_DATA")
         });
-    })
-    
-    exit(0);
+    });
 }
 
 async function focusTargetAsync(_table) {
