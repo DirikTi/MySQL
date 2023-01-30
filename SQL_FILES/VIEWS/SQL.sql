@@ -21,19 +21,15 @@ FROM users u;
 
 CREATE VIEW v_comments
 AS
-SELECT pc.postCommentId, pc.comment, pc.postId
-(
-    SELECT JSON_OBJECT(
-        'userId', u.userId,
-        'username', u.username,
-        'avatar', u.avatar
-    )
-    FROM users u 
-    WHERE u.userId = pc.userId
-    LIMIT 1 
-) AS userInfo,
+SELECT pc.postCommentId, pc.comment, pc.postId, L_USERS.username, L_USERS.userAvatar, L_USERS.isSpecialUser,
 pc.created_date
-FROM post_comments pc
+FROM post_comments pc,
+LATERAL (
+    SELECT username, avatar AS userAvatar, isSpecialUser 
+    FROM users u
+    WHERE u.userId=pc.userId
+    LIMIT 1
+) L_USERS
 
 CREATE VIEW v_posts
 AS

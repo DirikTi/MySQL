@@ -50,7 +50,8 @@ WITH RECURSIVE cte AS
     FROM temp_type_datas ttd INNER JOIN cte c ON c.typeName=ttd.relation
     LIMIT 15
 )
-SELECT * FROM cte;
+INSERT INTO types (name, hieararcyid)
+SELECT typeName, hieararcyid FROM cte;
 
 DROP TEMPORARY TABLE IF EXISTS row_numb_datas;
 DROP TABLE IF EXISTS temp_type_datas;

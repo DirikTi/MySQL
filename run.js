@@ -105,7 +105,7 @@ asikus_db.connect((err) => {
 
 async function main() {
     let promiseArr = [];
-    /*
+    
     for (let index = 0; index < TABLES.length; index++) {
         const table = TABLES[index];
         if(table.important) {
@@ -116,7 +116,7 @@ async function main() {
         }
     }
 
-    await Promise.all(promiseArr);*/
+    await Promise.all(promiseArr);
 
     fs.readFile("./SQL_FILES/INSERT_DATA/SQL.sql", (err, data) => {
         
