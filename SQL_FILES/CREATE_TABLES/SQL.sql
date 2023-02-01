@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS post_comments (
 CREATE TABLE IF NOT EXISTS post_visits (
     postId BIGINT UNSIGNED NOT NULL,
     visitCount MEDIUMINT,
-    created_date DATE DEFAULT NOW()
+    created_date DATE NOT NULL
 ) ENGINE=ARCHIVE;
 
 CREATE TABLE IF NOT EXISTS releationships (
